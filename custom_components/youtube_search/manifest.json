@@ -1,0 +1,10 @@
+{
+    "domain": "youtube_search",
+    "name": "YouTube Video Details",
+    "config_flow": true,
+    "documentation": "https://github.com/hokiebrian/youtube_details",
+    "requirements": [],
+    "dependencies": [],
+    "codeowners": ["@hokiebrian"],
+    "version": "1.0.0"
+  }

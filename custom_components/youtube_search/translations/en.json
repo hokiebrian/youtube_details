@@ -1,0 +1,20 @@
+{
+    "config": {
+      "flow_title": "YouTube Search",
+      "step": {
+        "user": {
+          "title": "Enter your YouTube API Key",
+          "data": {
+            "api_key": "API Key"
+          }
+        }
+      },
+      "error": {
+        "invalid_api_key": "Invalid API Key"
+      },
+      "abort": {
+        "already_configured": "This integration has already been configured"
+      }
+    }
+  }
+  
