@@ -2,6 +2,9 @@ search_video:
   description: Search for a video on YouTube by Title and update the sensor state and attributes with the video details.
   fields:
     video_title:
+      name: Video Title
       description: The title of the video to search for on YouTube
       example: "Metallica One"
       required: true
+      selector: 
+        text:
