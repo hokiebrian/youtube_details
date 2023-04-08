@@ -1,4 +1,5 @@
 search_video:
+  name: Search Video
   description: Search for a video on YouTube by Title and update the sensor state and attributes with the video details.
   fields:
     video_title:

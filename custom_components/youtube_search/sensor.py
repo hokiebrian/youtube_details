@@ -6,18 +6,20 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.const import CONF_API_KEY
 from .const import DOMAIN
 
+_LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     sensor = YouTubeSearchSensor(config_entry)
     async_add_entities([sensor], True)
     
 class YouTubeSearchSensor(Entity):
+
+    _LOGGER = logging.getLogger(__name__)
+
     def __init__(self, config_entry):
         self.api_key = config_entry.data[CONF_API_KEY]
         self._state = None
         self._attributes = {}
-    
-    _LOGGER = logging.getLogger(__name__)
 
     async def async_added_to_hass(self):
         self.hass.services.async_register(DOMAIN, "search_video", self.search_video)
