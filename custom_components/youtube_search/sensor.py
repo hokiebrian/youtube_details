@@ -1,17 +1,18 @@
-import asyncio
-import json
+""" YouTube Search Sensor """
+
 import logging
 from aiohttp import ClientSession
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
 from homeassistant.const import CONF_API_KEY
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
     sensor = YouTubeSearchSensor(config_entry)
     async_add_entities([sensor], True)
-    
+
 class YouTubeSearchSensor(Entity):
 
     _LOGGER = logging.getLogger(__name__)
@@ -68,7 +69,7 @@ class YouTubeSearchSensor(Entity):
     @property
     def state(self):
         return self._state
-    
+
     @property
     def unique_id(self):
         return f"YouTubeSearch{self.api_key[:7]}"
