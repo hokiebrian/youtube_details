@@ -2,6 +2,7 @@ from homeassistant import config_entries
 from .const import DOMAIN
 import aiohttp
 
+
 class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
@@ -20,7 +21,9 @@ class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             success = await self.test_youtube_api_key(api_key)
 
             if not success:
-                errors["base"] = "Failed to connect to YouTube API with the provided API key."
+                errors[
+                    "base"
+                ] = "Failed to connect to YouTube API with the provided API key."
 
             if not errors:
                 # The user input is valid and the API test passed, create a new config entry
@@ -56,4 +59,5 @@ class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def schema(self):
         from homeassistant.helpers import config_validation as cv
         import voluptuous as vol
+
         return vol.Schema({vol.Required("api_key"): cv.string})
