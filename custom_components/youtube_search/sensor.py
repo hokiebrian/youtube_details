@@ -8,6 +8,10 @@ from homeassistant.const import CONF_API_KEY
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q={}&key={}"
+YOUTUBE_VIDEO_DETAILS_URL = (
+    "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id={}&key={}"
+)
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entities):
@@ -16,8 +20,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
 
 
 class YouTubeSearchSensor(Entity):
-    _LOGGER = logging.getLogger(__name__)
-
     def __init__(self, config_entry):
         self.api_key = config_entry.data[CONF_API_KEY]
         self._state = None
@@ -31,43 +33,39 @@ class YouTubeSearchSensor(Entity):
 
     async def search_video(self, call):
         video_title = call.data.get("video_title")
-        url_search = "https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=1&q={}&key={}".format(
-            video_title, self.api_key
+        search_data = await self.fetch_data(
+            YOUTUBE_SEARCH_URL.format(video_title, self.api_key)
         )
-        url_video_details = "https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id={}&key={}"
+        if "items" not in search_data:
+            self.update_state("No Results Found", {}, f"Search Error {video_title}")
+            return
 
+        video_id = search_data["items"][0]["id"]["videoId"]
+        _LOGGER.debug("Search %s results %s", video_title, video_id)
+
+        video_details_data = await self.fetch_data(
+            YOUTUBE_VIDEO_DETAILS_URL.format(video_id, self.api_key)
+        )
+        if "items" not in video_details_data:
+            self.update_state(None, {}, f"No Data Found for {video_id}")
+            return
+
+        response_video_details = video_details_data["items"][0]
+        _LOGGER.debug("Search %s results %s", video_id, response_video_details)
+
+        self.update_state(video_id, response_video_details)
+
+    async def fetch_data(self, url):
         async with ClientSession() as session:
-            async with session.get(url_search) as response_search:
-                search_data = await response_search.json()
-                if "items" not in search_data:
-                    self._state = "No Results Found"
-                    self._attributes = {}
-                    self.async_write_ha_state()
-                    self._LOGGER.error(f"Search Error{video_title}")
-                    return
+            async with session.get(url) as response:
+                return await response.json()
 
-                video_id = search_data["items"][0]["id"]["videoId"]
-                self._LOGGER.debug(f"Search {video_title} results {video_id}")
-
-            async with session.get(
-                url_video_details.format(video_id, self.api_key)
-            ) as response_video_details:
-                video_details_data = await response_video_details.json()
-                if "items" not in video_details_data:
-                    self._state = None
-                    self._attributes = {}
-                    self.async_write_ha_state()
-                    self._LOGGER.error(f"No Data Found for {video_id}")
-                    return
-
-                response_video_details = video_details_data["items"][0]
-                self._LOGGER.debug(
-                    f"Search {video_id} results {response_video_details}"
-                )
-
-            self._state = video_id
-            self._attributes = response_video_details
-            self.async_write_ha_state()
+    def update_state(self, state, attributes, log_msg=None):
+        self._state = state
+        self._attributes = attributes
+        self.async_write_ha_state()
+        if log_msg:
+            _LOGGER.error(log_msg)
 
     @property
     def name(self):
