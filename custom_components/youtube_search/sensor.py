@@ -1,6 +1,7 @@
 """ YouTube Search Sensor """
 
 import logging
+from urllib.parse import quote
 from aiohttp import ClientSession
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import Entity
@@ -33,11 +34,14 @@ class YouTubeSearchSensor(Entity):
 
     async def search_video(self, call):
         video_title = call.data.get("video_title")
+        video_title_encoded = quote(video_title)
         search_data = await self.fetch_data(
-            YOUTUBE_SEARCH_URL.format(video_title, self.api_key)
+            YOUTUBE_SEARCH_URL.format(video_title_encoded, self.api_key)
         )
         if "items" not in search_data:
-            self.update_state("No Results Found", {}, f"Search Error {video_title}")
+            self.update_state(
+                "No Results Found", {}, f"Search Error Video Not Found {video_title}"
+            )
             return
 
         video_id = search_data["items"][0]["id"]["videoId"]
