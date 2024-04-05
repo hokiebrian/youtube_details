@@ -1,16 +1,15 @@
-""" Config Flow for YouTube Search Component """
+""" Config Flow for HA Concerts Component """
 import aiohttp
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.helpers import config_validation as cv
 from .const import DOMAIN
 
-YOUTUBE_API_URL = (
-    "https://www.googleapis.com/youtube/v3/videos?id=Ks-_Mh1QhMc&part=id,snippet&key={}"
+TM_API_URL = (
+    "https://app.ticketmaster.com/discovery/v2/?apikey={}"
 )
 
-
-class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
+class TMFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
@@ -19,18 +18,18 @@ class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             api_key = user_input.get("api_key")
 
-            success = await self.test_youtube_api_key(api_key)
+            success = await self.test_tm_api_key(api_key)
             if success:
                 await self.async_set_unique_id(user_input["api_key"][:7])
                 self._abort_if_unique_id_configured()
                 return self.async_create_entry(
-                    title="YouTube Search",
+                    title="HA Concerts",
                     data={"api_key": api_key},
                 )
 
             errors[
                 "api_key"
-            ] = "Failed to connect to YouTube API with the provided API key."
+            ] = "Failed to connect to Ticketmaster API with the provided API key."
 
         return self.async_show_form(
             step_id="user",
@@ -38,13 +37,12 @@ class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def test_youtube_api_key(self, api_key):
-        url = YOUTUBE_API_URL.format(api_key)
+    async def test_tm_api_key(self, api_key):
+        url = TM_API_URL.format(api_key)
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
-                response_data = await response.json()
 
-                if response.status != 200 or "error" in response_data:
+                if response.status != 200:
                     return False
 
                 return True

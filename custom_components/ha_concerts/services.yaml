@@ -1,0 +1,18 @@
+search_concerts:
+  name: Search for Concerts
+  description: Search for Concerts in your area.
+  fields:
+    artist:
+      name: Artist
+      description: The title of the video to search for on YouTube
+      example: "Metallica"
+      required: false
+      selector: 
+        text:
+    venue:
+      name: Venue
+      description: Search for a venue
+      example: "Fillmore"
+      required: false
+      selector: 
+        text:

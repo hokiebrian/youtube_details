@@ -1,0 +1,12 @@
+  {
+    "domain": "ha_concerts",
+    "name": "Concerts",
+    "codeowners": ["@hokiebrian"],
+    "config_flow": true,
+    "dependencies": [],
+    "documentation": "https://github.com/hokiebrian/ha_concerts",
+    "iot_class":  "cloud_polling",
+    "issue_tracker": "https://github.com/hokiebrian/ha_concerts/issues",
+    "requirements": [],
+    "version": "0.0.1"
+  }
