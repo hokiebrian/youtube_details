@@ -1,9 +1,9 @@
 {
     "config": {
-      "flow_title": "HA Concerts",
+      "flow_title": "YouTube Search",
       "step": {
         "user": {
-          "title": "Enter your Ticketmaster Discovery 2.0 API Key",
+          "title": "Enter your YouTube API Key",
           "data": {
             "api_key": "API Key"
           }
