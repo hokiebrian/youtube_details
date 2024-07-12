@@ -1,4 +1,5 @@
 """ Config Flow for YouTube Search Component """
+
 import aiohttp
 import voluptuous as vol
 from homeassistant import config_entries
@@ -28,9 +29,9 @@ class YouTubeFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                     data={"api_key": api_key},
                 )
 
-            errors[
-                "api_key"
-            ] = "Failed to connect to YouTube API with the provided API key."
+            errors["api_key"] = (
+                "Failed to connect to YouTube API with the provided API key."
+            )
 
         return self.async_show_form(
             step_id="user",
